@@ -8,5 +8,26 @@
     {% endfor %}
   </ol>
 {% else %}
-Yes, we have no bookmarks
+We have no bookmarks
 {% endif %}
+
+<h1>Personal Bookmarks</h1>
+
+{% if personal_bookmarks %}
+  <ol>
+
+    {% for bookmark in personal_bookmarks %}
+      <li><a href="{{ bookmark.url }}">{{ bookmark.name }}</a></li>
+    {% endfor %}
+  </ol>
+{% else %}
+You have no personal bookmarks
+{% endif %}
+
+<h2>New Bookmark</h2>
+
+<form method="POST" class="bookmark-form">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="save btn btn-default">Save</button>
+</form>
