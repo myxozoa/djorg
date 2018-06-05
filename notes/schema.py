@@ -2,6 +2,7 @@ from django.conf import settings
 from graphene_django import DjangoObjectType
 import graphene
 from .models import Note as NoteModel
+from django.contrib.auth.models import User as UserModel
 
 
 class Note(DjangoObjectType):
@@ -65,8 +66,30 @@ class CreateNote(graphene.Mutation):
 
             return CreateNote(note=new_note, ok=is_ok)
 
+class User(DjangoObjectType):
+    class Meta:
+        model = UserModel
+
+        # Describe the data as a ndoe in the graph for GraphQL
+        interfaces = (graphene.relay.Node, )
+
+class RegisterUser(graphene.Mutation):
+
+    class Arguments:
+        username = graphene.String()
+        password = graphene.String()
+
+    user = graphene.Field(User)
+
+    def mutate(self, info, username, password):
+        new_user = UserModel(username=username, password=password)
+        new_user.save()
+
+        return RegisterUser(user=new_user)
+
 class Mutation(graphene.ObjectType):
     create_note = CreateNote.Field()
+    register_user = RegisterUser.Field()
 
 
             # Add a schema and attach the query
